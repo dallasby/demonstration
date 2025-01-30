@@ -1,0 +1,54 @@
+---
+spring:
+  config.activate.on-profile: default
+  sql.init.schema-locations: classpath:schema-h2.sql
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+cds:
+  data-source.auto-config.enabled: false
+  security:
+    mock:
+      users:
+        - name: Viewer-User
+          security:
+            mock:
+              users:
+                - name: Viewer-User
+                  password: viewer-pass
+                  tenant: CrazyCars
+                  roles:
+                    - Viewer
+                  attributes:
+                    Country: [ GER, FR ]
+                  additional:
+                    email: myviewer@crazycars.com
+                  features:
+                    - cruise
+                    - park
+
+                - name: Privileged-User
+                  password: privileged-pass
+                  privileged: true
+                  features:
+                    - "*"
+---
+management:
+  endpoint:
+    health:
+      show-components: always
+      probes.enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    defaults.enabled: false
+    ping.enabled: true
+    db.enabled: true
+    redis:
+      enabled: true
+server:
+  port: 8081

@@ -1,0 +1,29 @@
+### Get all orders
+GET http://localhost:8081/odata/v4/OrdersService/Orders
+Authorization: Basic aW50ZXJuYWw6
+
+### Create order
+POST http://localhost:8081/odata/v4/OrdersService/createOrder
+Content-Type: application/json
+Authorization: Basic aW50ZXJuYWw6
+
+{
+  "ID": 6,
+  "quantity": 2,
+  "totalPrice": 111.11,
+  "user": 3,
+  "product": 5
+}
+
+### Delete order
+POST http://localhost:8081/odata/v4/OrdersService/deleteOrder
+Content-Type: application/json
+Authorization: Basic aW50ZXJuYWw6
+
+{
+  "ID": 6
+}
+
+### Get order by user ID
+GET http://localhost:8081/odata/v4/OrdersService/getOrdersByUser(user=3)
+Authorization: Basic aW50ZXJuYWw6

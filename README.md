@@ -1,0 +1,1 @@
+Simple project with CAP JAVA. Here you can find basic CRUD operations based on [SAP CAP tutorial](https://cap.cloud.sap/docs/get-started/).
