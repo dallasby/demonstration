@@ -2,6 +2,8 @@ package customer.demonstration.util;
 
 import com.sap.cds.ql.Select;
 import com.sap.cds.services.persistence.PersistenceService;
+import com.sap.cloud.sdk.cloudplatform.resilience.ResilienceConfiguration;
+import com.sap.cloud.sdk.cloudplatform.resilience.ResilienceDecorator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,12 @@ import cds.gen.ordersservice.Orders_;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class OrderValidationService {
     private final PersistenceService db;
+    private final ResilienceConfiguration resilienceConfig;
 
     public Users validateUsers(Integer userId) {
         return db.run(Select.from(Users_.class).byId(userId))
@@ -62,8 +65,12 @@ public class OrderValidationService {
     }
 
     public List<Orders> getOrdersByUser(Integer userId) {
-        return db.run(Select.from(Orders_.class)
-                        .where(orders -> orders.user_ID().eq(userId)))
-                .listOf(Orders.class);
+        log.info("OrderValidationService: Getting orders for user with ID: {}", userId);
+        return ResilienceDecorator.executeSupplier(() -> {
+            log.info("Fetching from DB for user: {}", userId);
+            return db.run(Select.from(Orders_.class)
+                            .where(o -> o.user_ID().eq(userId)))
+                    .listOf(Orders.class);
+        }, resilienceConfig);
     }
 }
